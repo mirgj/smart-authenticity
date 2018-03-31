@@ -1,0 +1,32 @@
+{
+  "name": "smart-authenticity",
+  "version": "1.0.0",
+  "description": "smart-authenticity",
+  "main": "truffle.js",
+  "scripts": {
+    "test": "truffle test"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirgj/smart-authenticity.git"
+  },
+  "keywords": [
+    "solidity",
+    "smart",
+    "contract"
+  ],
+  "author": "mirgj",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mirgj/smart-authenticity/issues"
+  },
+  "homepage": "https://github.com/mirgj/smart-authenticity#readme"
+}
