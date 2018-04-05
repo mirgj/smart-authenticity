@@ -8,6 +8,10 @@ contract Company is Destructible {
   string public location;
   mapping(string => address) products;
 
+  event ProductAdded(address companyAddress, address productAddress, string serialNumber, string name);
+  event ProductRemoved(string serialNumber);
+
+
   function Company(string _identifier, string _fullName, string _location) public {
     identifier = _identifier;
     fullName = _fullName;
@@ -18,7 +22,15 @@ contract Company is Destructible {
     Product p = new Product(serialNumber, name);
     products[serialNumber] = address(p);
 
+    emit ProductAdded(address(this), address(p), serialNumber, name);
+
     return address(p);
+  }
+
+  function removedProduct(string serialNumber) onlyOwner public {
+    delete products[serialNumber];
+
+    emit ProductRemoved(serialNumber);
   }
 
   function haveProduct(string serialNumber) public view returns(bool) {

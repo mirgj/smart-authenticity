@@ -17,7 +17,8 @@ contract Authenticity is Ownable {
     assert(Company(companies[identifier]).haveProduct(productSerial));
     _;
   }
-
+  event CompanyCreated(address addr, string identifier, string fullName, string location);
+  event CompanyDeleted(string identifier);
 
   function Authenticity() public { }
 
@@ -30,12 +31,16 @@ contract Authenticity is Ownable {
   {
     Company c = new Company(identifier, fullName, location);
     companies[identifier] = address(c);
+    
+    emit CompanyCreated(address(c), identifier, fullName, location);
 
     return address(c);
   }
 
   function removeCompany(string identifier) onlyOwner companyExists(identifier) public {
     delete companies[identifier];
+
+    emit CompanyDeleted(identifier);
   }
 
   function isAuthentic(string companyIdentifier, string productSerial) 
