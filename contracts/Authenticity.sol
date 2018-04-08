@@ -13,6 +13,10 @@ contract Authenticity is Ownable {
     assert(companies[identifier] != address(0x0));
     _;
   }
+  modifier companyNotExists(string identifier) {
+    assert(companies[identifier] == address(0x0));
+    _;
+  }
   modifier productExists(string identifier, string productSerial) {
     assert(Company(companies[identifier]).haveProduct(productSerial));
     _;
@@ -26,6 +30,7 @@ contract Authenticity is Ownable {
     notEmpty(identifier)
     notEmpty(fullName)
     notEmpty(location)
+    companyNotExists(identifier)
     public 
     returns(address) 
   {
