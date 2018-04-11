@@ -21,6 +21,10 @@ contract Authenticity is Ownable {
     assert(Company(companies[identifier]).haveProduct(productSerial));
     _;
   }
+  modifier productNotExists(string identifier, string productSerial) {
+    assert(!Company(companies[identifier]).haveProduct(productSerial));
+    _;
+  }
   event CompanyCreated(address addr, string identifier, string fullName, string location);
   event CompanyDeleted(string identifier);
 
@@ -53,11 +57,34 @@ contract Authenticity is Ownable {
     notEmpty(productSerial)
     companyExists(companyIdentifier)
     productExists(companyIdentifier, productSerial)
-    public 
+    external 
     view
     returns(bool) 
   {
     return Company(companies[companyIdentifier]).isProductAuthentic(productSerial);
+  }
+
+  function addProduct(string companyIdentifier, string productSerial, string productName) 
+    notEmpty(companyIdentifier)
+    notEmpty(productSerial)
+    notEmpty(productName)
+    companyExists(companyIdentifier)
+    productNotExists(companyIdentifier, productSerial)
+    external
+    returns(address) 
+  {
+    return Company(companies[companyIdentifier]).addProduct(productSerial, productName);
+  }
+
+
+  function removeProduct(string companyIdentifier, string productSerial) 
+    notEmpty(companyIdentifier)
+    notEmpty(productSerial)
+    companyExists(companyIdentifier)
+    productExists(companyIdentifier, productSerial)
+    external
+  {
+    Company(companies[companyIdentifier]).removeProduct(productSerial);
   }
 
 }

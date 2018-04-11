@@ -27,7 +27,7 @@ contract Company is Destructible {
     return address(p);
   }
 
-  function removedProduct(string serialNumber) onlyOwner public {
+  function removeProduct(string serialNumber) onlyOwner public {
     delete products[serialNumber];
 
     emit ProductRemoved(serialNumber);

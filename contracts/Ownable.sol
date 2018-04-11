@@ -17,7 +17,7 @@ contract Ownable {
     require(newOwner != address(0));
     require(newOwner != owner);
 
-    emit OwnershipTransferred(owner, newOwner);
     owner = newOwner;
+    emit OwnershipTransferred(owner, newOwner);
   }
 }
