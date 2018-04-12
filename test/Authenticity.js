@@ -91,4 +91,10 @@ contract("Authenticity", function (accounts) {
     }
   });
 
+  it("the company should be registered", async () => {
+    const result = await authenticityContract.isCompanyRegistered(cpId);
+
+    assert.isTrue(result, "It should be registered correctly");
+  });
+
 });
