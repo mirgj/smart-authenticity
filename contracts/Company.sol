@@ -6,7 +6,7 @@ contract Company is Destructible {
   string public identifier;
   string public fullName;
   string public location;
-  mapping(string => address) products;
+  mapping(string => Product) products;
 
   event ProductAdded(address companyAddress, address productAddress, string serialNumber, string name);
   event ProductRemoved(string serialNumber);
@@ -20,7 +20,7 @@ contract Company is Destructible {
 
   function addProduct(string serialNumber, string name) onlyOwner public returns(address) {
     Product p = new Product(serialNumber, name);
-    products[serialNumber] = address(p);
+    products[serialNumber] = p;
 
     emit ProductAdded(address(this), address(p), serialNumber, name);
 
@@ -38,7 +38,7 @@ contract Company is Destructible {
   }
 
   function isProductAuthentic(string serialNumber) public view returns(bool) {
-    return Product(products[serialNumber]).isValid();
+    return products[serialNumber].isValid();
   }
 
 }

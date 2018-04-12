@@ -3,7 +3,7 @@ import "./Ownable.sol";
 import "./Company.sol";
 
 contract Authenticity is Ownable {
-  mapping(string => address) companies;
+  mapping(string => Company) companies;
 
   modifier notEmpty(string value) {
     assert(bytes(value).length > 0);
@@ -18,11 +18,11 @@ contract Authenticity is Ownable {
     _;
   }
   modifier productExists(string identifier, string productSerial) {
-    assert(Company(companies[identifier]).haveProduct(productSerial));
+    assert(companies[identifier].haveProduct(productSerial));
     _;
   }
   modifier productNotExists(string identifier, string productSerial) {
-    assert(!Company(companies[identifier]).haveProduct(productSerial));
+    assert(!companies[identifier].haveProduct(productSerial));
     _;
   }
   event CompanyCreated(address addr, string identifier, string fullName, string location);
@@ -35,21 +35,25 @@ contract Authenticity is Ownable {
     notEmpty(fullName)
     notEmpty(location)
     companyNotExists(identifier)
-    public 
+    external 
     returns(address) 
   {
     Company c = new Company(identifier, fullName, location);
-    companies[identifier] = address(c);
+    companies[identifier] = c;
     
     emit CompanyCreated(address(c), identifier, fullName, location);
 
     return address(c);
   }
 
-  function removeCompany(string identifier) onlyOwner companyExists(identifier) public {
+  function removeCompany(string identifier) onlyOwner companyExists(identifier) external {
     delete companies[identifier];
 
     emit CompanyDeleted(identifier);
+  }
+
+  function isCompanyRegistered(string identifier) external view returns(bool) {
+    return companies[identifier] != address(0x0);
   }
 
   function isAuthentic(string companyIdentifier, string productSerial) 
@@ -61,7 +65,7 @@ contract Authenticity is Ownable {
     view
     returns(bool) 
   {
-    return Company(companies[companyIdentifier]).isProductAuthentic(productSerial);
+    return companies[companyIdentifier].isProductAuthentic(productSerial);
   }
 
   function addProduct(string companyIdentifier, string productSerial, string productName) 
@@ -73,7 +77,7 @@ contract Authenticity is Ownable {
     external
     returns(address) 
   {
-    return Company(companies[companyIdentifier]).addProduct(productSerial, productName);
+    return companies[companyIdentifier].addProduct(productSerial, productName);
   }
 
 
@@ -84,7 +88,7 @@ contract Authenticity is Ownable {
     productExists(companyIdentifier, productSerial)
     external
   {
-    Company(companies[companyIdentifier]).removeProduct(productSerial);
+    companies[companyIdentifier].removeProduct(productSerial);
   }
 
 }
