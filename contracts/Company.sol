@@ -11,23 +11,21 @@ contract Company is Destructible {
   event ProductAdded(address companyAddress, address productAddress, string serialNumber, string name);
   event ProductRemoved(string serialNumber);
 
-
   function Company(string _identifier, string _fullName, string _location) public {
     identifier = _identifier;
     fullName = _fullName;
     location = _location;
   }
 
-  function addProduct(string serialNumber, string name) onlyOwner public returns(address) {
+  function addProduct(string serialNumber, string name) onlyOwner public {
     Product p = new Product(serialNumber, name);
     products[serialNumber] = p;
 
     emit ProductAdded(address(this), address(p), serialNumber, name);
-
-    return address(p);
   }
 
   function removeProduct(string serialNumber) onlyOwner public {
+    products[serialNumber].destroy();
     delete products[serialNumber];
 
     emit ProductRemoved(serialNumber);

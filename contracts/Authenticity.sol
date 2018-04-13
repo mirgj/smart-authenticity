@@ -35,18 +35,16 @@ contract Authenticity is Ownable {
     notEmpty(fullName)
     notEmpty(location)
     companyNotExists(identifier)
-    external 
-    returns(address) 
+    external
   {
     Company c = new Company(identifier, fullName, location);
     companies[identifier] = c;
     
     emit CompanyCreated(address(c), identifier, fullName, location);
-
-    return address(c);
   }
 
-  function removeCompany(string identifier) onlyOwner companyExists(identifier) external {
+  function removeCompany(string identifier) companyExists(identifier) external {
+    companies[identifier].destroy();
     delete companies[identifier];
 
     emit CompanyDeleted(identifier);
@@ -75,9 +73,8 @@ contract Authenticity is Ownable {
     companyExists(companyIdentifier)
     productNotExists(companyIdentifier, productSerial)
     external
-    returns(address) 
   {
-    return companies[companyIdentifier].addProduct(productSerial, productName);
+    companies[companyIdentifier].addProduct(productSerial, productName);
   }
 
 

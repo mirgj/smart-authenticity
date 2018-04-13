@@ -5,11 +5,11 @@ contract Ownable {
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
   function Ownable() public {
-    owner = msg.sender;
+    owner = tx.origin;
   }
 
   modifier onlyOwner() {
-    require(msg.sender == owner);
+    require(tx.origin == owner);
     _;
   }
 
