@@ -179,4 +179,16 @@ contract('Authenticity', function (accounts) {
     events.stopWatching();
   });
 
+  it('should fail to add the same product again', async () => {
+    let isErr = false;
+
+    try {
+      const tx = await authenticityContract.addProduct(cpId, prId, 'my_product_name', {from: company1});
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
 });
