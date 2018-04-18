@@ -1,5 +1,6 @@
 const Authenticity = artifacts.require('./Authenticity.sol');
 const Company = artifacts.require('./Company.sol');
+const Product = artifacts.require('./Product.sol');
 
 contract('Authenticity', function (accounts) {
   const cpId = 'MSF';
@@ -78,14 +79,16 @@ contract('Authenticity', function (accounts) {
     const tx = await authenticityContract.createCompany(cpId, 'My company', 'My location', {from: company1});
 
     assert.equal(tx.receipt.status, 1, 'Wrong status');
-    assert.equal(tx.logs.length, 1, 'One event expected');
-    assert.equal(tx.logs[0].event, 'CompanyCreated', 'CompanyCreated event should be fired');
-    assert.equal(tx.logs[0].args.identifier, cpId, 'Wrong identifier');
-    assert.equal(tx.logs[0].args.fullName, 'My company', 'Wrong fullName');
-    assert.equal(tx.logs[0].args.location, 'My location', 'Wrong location');
-    assert.isTrue(web3.isAddress(tx.logs[0].args.addr), 'Should be an address');
+    assert.equal(tx.logs.length, 2, 'One event expected');
+    assert.equal(tx.logs[0].event, 'OwnershipTransferred', 'OwnershipTransferred event should be fired');
+    assert.equal(tx.logs[0].args.newOwner, company1, 'Wrong old owner');
+    assert.equal(tx.logs[1].event, 'CompanyCreated', 'CompanyCreated event should be fired');
+    assert.equal(tx.logs[1].args.identifier, cpId, 'Wrong identifier');
+    assert.equal(tx.logs[1].args.fullName, 'My company', 'Wrong fullName');
+    assert.equal(tx.logs[1].args.location, 'My location', 'Wrong location');
+    assert.isTrue(web3.isAddress(tx.logs[1].args.addr), 'Should be an address');
 
-    company1Address = tx.logs[0].args.addr;
+    company1Address = tx.logs[1].args.addr;
   });
 
   it('should fail to create again the same company', async () => {
@@ -104,6 +107,13 @@ contract('Authenticity', function (accounts) {
     const result = await authenticityContract.isCompanyRegistered(cpId);
 
     assert.isTrue(result, 'It should be registered correctly');
+  });
+
+  it('the company should have the right owner', async () => {
+    const company1Instance = await Company.at(company1Address);
+    const owner = await company1Instance.owner();
+
+    assert.equal(owner, company1, 'It should have the right owner');
   });
 
   it('should fail to add a product for a company that doesn\'t exist', async () => {
@@ -161,7 +171,7 @@ contract('Authenticity', function (accounts) {
     const events = company1Instance.allEvents();
     events.watch((err, res) => {
       if (err) throw err;
-        
+
       hasFired = true;
       assert.equal(res.event, 'ProductAdded', 'ProductAdded event should be fired');
       assert.equal(res.args.companyAddress, company1Address, 'Wrong identifier');
@@ -169,14 +179,25 @@ contract('Authenticity', function (accounts) {
       assert.equal(res.args.name, 'my_product_name', 'Wrong product name');
       assert.isTrue(web3.isAddress(res.args.productAddress), 'Should be an address');
 
-      product1Address = res.args.addr;
+      product1Address = res.args.productAddress;
     });
 
   	const tx = await authenticityContract.addProduct(cpId, prId, 'my_product_name', {from: company1});
     
     assert.equal(tx.receipt.status, 1, 'Wrong status');
+    assert.equal(tx.logs.length, 1, 'One event expected');
+    assert.equal(tx.logs[0].event, 'OwnershipTransferred', 'OwnershipTransferred event should be fired');
+    assert.equal(tx.logs[0].args.newOwner, company1, 'Wrong old owner');
+    assert.equal(tx.receipt.status, 1, 'Wrong status');
     assert.isTrue(hasFired, 'expected event');
     events.stopWatching();
+  });
+
+  it('the product should have the right owner', async () => {
+    const product1Instance = await Product.at(product1Address);
+    const owner = await product1Instance.owner();
+
+    assert.equal(owner, company1, 'It should have the right owner');
   });
 
   it('should fail to add the same product again', async () => {

@@ -2,14 +2,16 @@ pragma solidity 0.4.21;
 
 contract Ownable {
   address public owner;
+  address public creator;
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
   function Ownable() public {
-    owner = tx.origin;
+    owner = msg.sender;
+    creator = msg.sender;
   }
 
   modifier onlyOwner() {
-    require(tx.origin == owner);
+    require(msg.sender == owner || msg.sender == creator);
     _;
   }
 

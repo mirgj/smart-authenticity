@@ -20,6 +20,7 @@ contract Company is Destructible {
   function addProduct(string serialNumber, string name) onlyOwner public {
     Product p = new Product(serialNumber, name);
     products[serialNumber] = p;
+    p.transferOwnership(owner);
 
     emit ProductAdded(address(this), address(p), serialNumber, name);
   }

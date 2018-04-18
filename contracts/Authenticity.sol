@@ -25,6 +25,10 @@ contract Authenticity is Ownable {
     assert(!companies[identifier].haveProduct(productSerial));
     _;
   }
+  modifier onlyCompanyOwner(string identifier) {
+    assert(companies[identifier].owner() == msg.sender);
+    _;
+  }
   event CompanyCreated(address addr, string identifier, string fullName, string location);
   event CompanyDeleted(string identifier);
 
@@ -39,6 +43,7 @@ contract Authenticity is Ownable {
   {
     Company c = new Company(identifier, fullName, location);
     companies[identifier] = c;
+    c.transferOwnership(msg.sender);
     
     emit CompanyCreated(address(c), identifier, fullName, location);
   }
@@ -71,6 +76,7 @@ contract Authenticity is Ownable {
     notEmpty(productSerial)
     notEmpty(productName)
     companyExists(companyIdentifier)
+    onlyCompanyOwner(companyIdentifier)
     productNotExists(companyIdentifier, productSerial)
     external
   {
