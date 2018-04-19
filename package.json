@@ -4,7 +4,8 @@
   "description": "smart-authenticity",
   "main": "truffle.js",
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "test:cov": "./node_modules/.bin/solidity-coverage"
   },
   "directories": {
     "test": "test"
@@ -12,7 +13,8 @@
   "dependencies": {},
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0"
+    "babel-register": "^6.26.0",
+    "solidity-coverage": "^0.4.15"
   },
   "repository": {
     "type": "git",

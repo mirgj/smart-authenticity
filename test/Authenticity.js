@@ -212,4 +212,10 @@ contract('Authenticity', function (accounts) {
     }
   });
 
+  it('should get the authenticity for the product', async () => {
+    const result = await authenticityContract.isAuthentic(cpId, prId, {from: requester});
+    
+    assert.isTrue(result, 'the product should be authentic');
+  });
+
 });
