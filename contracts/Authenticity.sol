@@ -48,7 +48,11 @@ contract Authenticity is Ownable {
     emit CompanyCreated(address(c), identifier, fullName, location);
   }
 
-  function removeCompany(string identifier) companyExists(identifier) external {
+  function removeCompany(string identifier) 
+    companyExists(identifier)
+    onlyCompanyOwner(identifier)
+    external 
+  {
     companies[identifier].destroy();
     delete companies[identifier];
 
@@ -88,6 +92,7 @@ contract Authenticity is Ownable {
     notEmpty(companyIdentifier)
     notEmpty(productSerial)
     companyExists(companyIdentifier)
+    onlyCompanyOwner(companyIdentifier)
     productExists(companyIdentifier, productSerial)
     external
   {

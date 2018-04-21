@@ -218,4 +218,110 @@ contract('Authenticity', function (accounts) {
     assert.isTrue(result, 'the product should be authentic');
   });
 
+  it('should fail invalidate the product from another account', async () => {
+    let isErr = false;
+
+    try {
+      const product1Instance = await Product.at(product1Address);
+      const tx = await product1Instance.invalidate({from: company2});
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
+  it('should invalidate the product', async () => {
+    const product1Instance = await Product.at(product1Address);
+    const tx = await product1Instance.invalidate({from: company1});
+    const isValid = await product1Instance.isValid();
+
+    assert.equal(tx.receipt.status, 1, 'Wrong status');
+    assert.isFalse(isValid, 'the product should not be valid anymore');
+  });
+
+  it('should fail validate the product from another account', async () => {
+    let isErr = false;
+
+    try {
+      const product1Instance = await Product.at(product1Address);
+      const tx = await product1Instance.validate({from: company2});
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
+  it('should validate the product', async () => {
+    const product1Instance = await Product.at(product1Address);
+    const tx = await product1Instance.validate({from: company1});
+    const isValid = await product1Instance.isValid();
+
+    assert.equal(tx.receipt.status, 1, 'Wrong status');
+    assert.isTrue(isValid, 'the product should be valid again');
+  });
+
+  it('should fail to remove the product from another account', async () => {
+    let isErr = false;
+
+    try {
+      const tx = await authenticityContract.removeProduct(cpId, prId, {from: company2})
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
+  it('should remove the product correctly', async () => {
+    const company1Instance = await Company.at(company1Address);
+    let hasFired = false;
+
+    const events = company1Instance.allEvents();
+    events.watch((err, res) => {
+      if (err) throw err;
+
+      hasFired = true;
+      assert.equal(res.event, 'ProductRemoved', 'ProductRemoved event should be fired');
+      assert.equal(res.args.serialNumber, prId, 'Wrong serial hash');
+    });
+    const tx = await authenticityContract.removeProduct(cpId, prId, {from: company1})
+
+    assert.equal(tx.receipt.status, 1, 'Wrong status');
+    assert.isTrue(hasFired, 'expected event');
+    events.stopWatching();
+  });
+
+  it('should fail to get the authenticity for a non existing product', async () => {let isErr = false;
+    try {
+      const result = await authenticityContract.isAuthentic(cpId, prId, {from: requester});
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
+  it('should fail to remove the company from another account', async () => {
+    let isErr = false;
+
+    try {
+      const tx = await authenticityContract.removeCompany(cpId, {from: company2})
+    } catch(err) {
+      isErr = true;
+    } finally {
+      assert.isTrue(isErr, 'It should throw an error');
+    }
+  });
+
+  it('should remove the company', async () => {
+    const tx = await authenticityContract.removeCompany(cpId, {from: company1});
+
+    assert.equal(tx.receipt.status, 1, 'Wrong status');
+    assert.equal(tx.logs.length, 1, 'One event expected');
+    assert.equal(tx.logs[0].event, 'CompanyDeleted', 'CompanyDeleted event should be fired');
+    assert.equal(tx.logs[0].args.identifier, cpId, 'Wrong identifier');
+  });
+
 });

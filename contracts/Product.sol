@@ -16,7 +16,7 @@ contract Product is Destructible {
   	valid = false;
   }
 
-  function revalidate() onlyOwner public {
+  function validate() onlyOwner public {
   	valid = true;
   }
 
