@@ -9,7 +9,16 @@ Clone this repo to get the code
 ```
 git clone https://github.com/mirgj/smart-authenticity.git
 ```
-you can run the test
+install the packages
+```
+cd smart-authenticity
+npm install
+```
+get truffle (if you don't have it)
+```
+npm install -g test
+```
+then you can run the test
 ```
 truffle test
 ```
@@ -24,4 +33,4 @@ npm run test:cov
 
 ## Motivation
 
-Smart Authenticity is just a PoC (proof of concept) that aim to implement a new way to validate and check the authenticity of a given product/service in a decentralized way, using smart contract and blockchain technology.
+Smart Authenticity is just a PoC (proof of concept) that aim to implement a new way to validate and check the authenticity of a given product/service in a decentralized way, using smart contracts and blockchain technology.
